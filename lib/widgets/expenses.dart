@@ -3,7 +3,7 @@ import 'package:expense_tracker/model/expense.dart';
 import 'package:flutter/material.dart';
 
 class Expenses extends StatefulWidget {
-  const Expenses({Key? key}) : super(key: key);
+  const Expenses({super.key});
 
   @override
   State<Expenses> createState() => _ExpensesState();
