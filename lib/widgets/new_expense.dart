@@ -2,11 +2,12 @@ import 'package:expense_tracker/model/expense.dart';
 import 'package:flutter/material.dart';
 
 class NewExpense extends StatefulWidget {
-  const NewExpense({super.key});
+  const NewExpense({super.key,required this.onAddExpense});
+
+  final void Function(Expense) onAddExpense;
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _NewExpenseState();
   }
 }
@@ -33,6 +34,44 @@ class _NewExpenseState extends State<NewExpense> {
     });
   }
 
+    void _submitMethodData() {
+      final enteredAmount = double.tryParse(_amountController.text);
+      final amountIsInvalid = enteredAmount == null || enteredAmount <= 0;
+      if (_titleController.text.isEmpty ||
+          amountIsInvalid ||
+          _selectedDate == null) {
+        showDialog(
+          context: context,
+          builder:
+              (ctx) => AlertDialog(
+                title: Text('Invalid Input'),
+                content: Text('Please enter valid data'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                    },
+                    child: Text('Okay'),
+                  ),
+                ],
+              ),
+        );
+
+        return;
+      }
+
+      widget.onAddExpense(
+      Expense(
+      title: _titleController.text,
+      amount: enteredAmount!,
+      date: _selectedDate!,
+      category: _selectedCategory,
+    ));
+
+    Navigator.pop(context);
+    }
+
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -44,7 +83,7 @@ class _NewExpenseState extends State<NewExpense> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(16,48,16,16),
       child: Column(
         children: [
           TextField(
@@ -89,7 +128,7 @@ class _NewExpenseState extends State<NewExpense> {
               ),
             ],
           ),
-        SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
             children: [
               DropdownButton(
@@ -104,7 +143,7 @@ class _NewExpenseState extends State<NewExpense> {
                         )
                         .toList(),
                 onChanged: (value) {
-                  if((value)==null) {
+                  if ((value) == null) {
                     return;
                   }
                   setState(() {
@@ -120,9 +159,7 @@ class _NewExpenseState extends State<NewExpense> {
                 child: Text('Cancel'),
               ),
               ElevatedButton(
-                onPressed: () {
-                  print(_titleController.text);
-                },
+                onPressed: _submitMethodData,
                 child: Text('Save Expense'),
               ),
             ],
